@@ -2,10 +2,15 @@
 
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Entity\BarList;
+use App\Repository\BarListRepository;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Service\GeoJsonConverter;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
 
 
 class ApiController extends AbstractController
@@ -19,19 +24,30 @@ class ApiController extends AbstractController
     }
 
     /**
-     * @Route("/api/geojson", name="api_geojson", methods={"GET"})
+     * @Route("/api", name="api", methods={"GET"})
      *
      */
-    public function getGeojson(GeojsonConverter $geojsonConverter)
+    public function getGeojson(BarListRepository $repository, GeojsonConverter $geojsonConverter)
     {
-        $data = $this->getDoctrine()
-            ->getRepository(V2::class)
-            ->findAll();
+        //On recupere la liste de bars
+        $bars = $repository->findAll();
 
-        $geojson = $geojsonConverter->convertGeoJson($data);
+        //on specifie qu'on utilise un décodeur json
+        $encoders = [new JsonEncoder()];
+        //on  instance un normaliseur pour convertir en tableau
+        $normalizers = [new ObjectNormalizer()];
 
-        $response = new Response();
-        $response->setContent($geojson);
+        //on fait la conversion en json
+        //on instancie le convertiseur
+        $serializer = new Serializer($normalizers,$encoders);
+
+        //on convertit en json
+        $jsonContent = $serializer->serialize($bars, 'json');
+
+        $geoJson = $geojsonConverter->convertGeoJson($jsonContent);
+
+        $response = new Response($geoJson);
+
         $response->headers->set('Content-Type', 'application/json');
 
         return $response;
