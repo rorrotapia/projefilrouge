@@ -22,15 +22,16 @@ class GeoJsonConverter
                 'properties' => [
                     "id" => $value['id'],
                     "name" => $value['name'],
-                    "priceLevel" => $value['priceLevel'],
+                    "pricelevel" => $value['price_level'],
                     "rating" => $value['rating'],
                     "city" => $value['city'],
                     "cp" => $value['cp'],
                     "address" => $value['address'],
                     "metro" => $value['metro'],
-                    "priceNormal" => $value['priceNormal'],
-                    "priceHappy" => $value['priceHappy'],
+                    "priceNormal" => $value['price_normal'],
+                    "priceHappy" => $value['price_happy'],
                     "terrace" => $value['terrace'],
+                    "distance" => (isset($value['distance']) ? (float)$value['distance'] : null)
                 ],
             );
         }

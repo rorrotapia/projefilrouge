@@ -19,20 +19,31 @@ class BarListRepository extends ServiceEntityRepository
         parent::__construct($registry, BarList::class);
     }
 
-    public function findNearbyBars($geolat,$geolon) {
+    public function findAllBars() {
 
         $qb =  $this->createQueryBuilder('b')
-            ->select("SQRT(POW(69.1 * (b.lat - :latstart  ), 2) + POW(69.1 * ( :lonstart - b.lon) * COS(b.lat / 57.3), 2)) * 1.609344 AS distance_b")
+            ->select("b.id,b.name,b.price_level,b.rating,b.city,b.cp,b.address,b.lat,b.lon,b.metro,b.price_normal,b.price_happy,b.terrace")
+            ->getQuery();
+
+        return $qb->execute();
+
+    }
+
+    public function findNearbyBars(float $geolat,float $geolon,int $limitkm) : array
+    {
+        $limitkm = $limitkm*1000;
+        $qb =  $this->createQueryBuilder('b')
+            ->select("b.id,b.name,b.price_level,b.rating,b.city,b.cp,b.address,b.lat,b.lon,b.metro,b.price_normal,b.price_happy,b.terrace,
+            SQRT(POWER(69.1 * (b.lat - :latstart  ), 2) + POWER(69.1 * ( :lonstart - b.lon) * COS(b.lat / 57.3), 2)) * 1.609344 AS distance")
+            ->having("distance <= :limitkm")
+
+            ->setMaxResults(20)
             ->setParameter( 'latstart',$geolat)
             ->setParameter( 'lonstart',$geolon)
+            ->setParameter( 'limitkm',$limitkm)
             ->getQuery();
-        dump($qb);
-        return $qb->execute();
-            /*
-             SQRT(POW(69.1 * (bar.lat - :startlat  ), 2) +
-                POW(69.1 * ( :startlon - bar.lon) * COS(bar.lat / 57.3), 2)) * 1.609344 AS distance_b_p,
 
-            */
+        return $qb->execute();
     }
 
     // /**

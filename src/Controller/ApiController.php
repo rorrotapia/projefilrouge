@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\BarList;
 use App\Repository\BarListRepository;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
@@ -17,11 +18,13 @@ class ApiController extends AbstractController
 {
     /**
      * @Route("/")
-     */
+     *
+    */
     public function index()
     {
         return $this->redirectToRoute("api");
     }
+
 
     /**
      * @Route("/api", name="api", methods={"GET"})
@@ -30,7 +33,7 @@ class ApiController extends AbstractController
     public function getGeojson(BarListRepository $repository, GeojsonConverter $geojsonConverter)
     {
         //On recupere la liste de bars
-        $bars = $repository->findAll();
+        $bars = $repository->findAllBars();
 
         //on specifie qu'on utilise un décodeur json
         $encoders = [new JsonEncoder()];
@@ -56,14 +59,17 @@ class ApiController extends AbstractController
     }
 
     /**
-     * @Route("/api/barsnearby", name="api_barnearby", methods={"GET"})
+     * @Route("/api/search/", name="api_barnearby", methods={"GET"})
      *
      */
-    public function getNearbyBar (BarListRepository $repository, GeojsonConverter $geojsonConverter)
+    public function getNearbyBar (BarListRepository $repository, GeojsonConverter $geojsonConverter, Request $request)
     {
+        $lat = $request->query->get('lat');
+        $lon = $request->query->get('lon');
+        $limitkm = (isset($limitkm)) ? $request->query->get('limitkm') : 50;
+
         //On recupere la liste de bars
-        $bars = $repository->findNearbyBars(2.5, 48.5);
-        dump($bars);
+        $bars = $repository->findNearbyBars($lat, $lon, $limitkm);
 
         $encoders = [new JsonEncoder()];
         $normalizers = [new ObjectNormalizer()];
