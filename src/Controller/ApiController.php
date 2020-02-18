@@ -44,12 +44,36 @@ class ApiController extends AbstractController
         //on convertit en json
         $jsonContent = $serializer->serialize($bars, 'json');
 
+        //On convertir le json à geojson
         $geoJson = $geojsonConverter->convertGeoJson($jsonContent);
 
+        //on instencie la reponse
         $response = new Response($geoJson);
+        //on ajoute l'entete HTTP
+        $response->headers->set('Content-Type', 'application/json');
+        //on envoie la reponse
+        return $response;
+    }
 
+    /**
+     * @Route("/api/barsnearby", name="api_barnearby", methods={"GET"})
+     *
+     */
+    public function getNearbyBar (BarListRepository $repository, GeojsonConverter $geojsonConverter)
+    {
+        //On recupere la liste de bars
+        $bars = $repository->findNearbyBars(2.5, 48.5);
+        dump($bars);
+
+        $encoders = [new JsonEncoder()];
+        $normalizers = [new ObjectNormalizer()];
+        $serializer = new Serializer($normalizers,$encoders);
+        $jsonContent = $serializer->serialize($bars, 'json');
+        $geoJson = $geojsonConverter->convertGeoJson($jsonContent);
+        $response = new Response($geoJson);
         $response->headers->set('Content-Type', 'application/json');
 
         return $response;
     }
+
 }
