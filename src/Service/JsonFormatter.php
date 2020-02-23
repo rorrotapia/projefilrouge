@@ -2,12 +2,11 @@
 
 namespace App\Service;
 
-class GeoJsonConverter
+class JsonFormatter
 {
     public function convertGeoJson($jsonData)
     {
         $original_data = json_decode($jsonData, true);
-
         $features = array();
         foreach($original_data as $key => $value) {
             $features[] = array(
@@ -22,16 +21,11 @@ class GeoJsonConverter
                 'properties' => [
                     "id" => $value['id'],
                     "name" => $value['name'],
-                    "pricelevel" => $value['price_level'],
-                    "rating" => $value['rating'],
-                    "city" => $value['city'],
-                    "cp" => $value['cp'],
-                    "address" => $value['address'],
-                    "metro" => $value['metro'],
                     "priceNormal" => $value['price_normal'],
                     "priceHappy" => $value['price_happy'],
                     "terrace" => $value['terrace'],
-                    "distance" => (isset($value['distance']) ? (float)$value['distance'] : null)
+                    "start_hour" => date ( "H:i",$value['start_hour']['timestamp']),
+                    "end_hour" => date ( "H:i",$value['end_hour']['timestamp']),
                 ],
             );
         }
@@ -41,6 +35,19 @@ class GeoJsonConverter
         );
 
         $final_data = json_encode($new_data, JSON_PRETTY_PRINT);
+        return $final_data;
+    }
+
+    public function formatDate($jsonData)
+    {
+        $original_data = json_decode($jsonData, true);
+
+        foreach($original_data as &$value) {
+            $value['start_hour'] = date ( "H:i",$value['start_hour']['timestamp']);
+            $value['end_hour'] = date ( "H:i",$value['end_hour']['timestamp']);
+        }
+
+        $final_data = json_encode($original_data, JSON_PRETTY_PRINT);
         return $final_data;
     }
 }

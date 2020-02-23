@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -76,6 +78,16 @@ class BarList
      * @ORM\Column(type="integer")
      */
     private $terrace;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\BarOpenHours", mappedBy="id_bar")
+     */
+    private $barOpenHours;
+
+    public function __construct()
+    {
+        $this->barOpenHours = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -222,6 +234,37 @@ class BarList
     public function setTerrace(int $terrace): self
     {
         $this->terrace = $terrace;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|BarOpenHours[]
+     */
+    public function getBarOpenHours(): Collection
+    {
+        return $this->barOpenHours;
+    }
+
+    public function addBarOpenHour(BarOpenHours $barOpenHour): self
+    {
+        if (!$this->barOpenHours->contains($barOpenHour)) {
+            $this->barOpenHours[] = $barOpenHour;
+            $barOpenHour->setIdBar($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBarOpenHour(BarOpenHours $barOpenHour): self
+    {
+        if ($this->barOpenHours->contains($barOpenHour)) {
+            $this->barOpenHours->removeElement($barOpenHour);
+            // set the owning side to null (unless already changed)
+            if ($barOpenHour->getIdBar() === $this) {
+                $barOpenHour->setIdBar(null);
+            }
+        }
 
         return $this;
     }

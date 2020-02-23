@@ -29,7 +29,7 @@ class BarListRepository extends ServiceEntityRepository
 
     }
 
-    public function findNearbyBars(...$params) : array
+    /*public function findNearbyBars(...$params) : array
     {
         $params = [
             'latstart' => $params[0],
@@ -52,9 +52,9 @@ class BarListRepository extends ServiceEntityRepository
         $query = $where->setMaxResults(20)->setParameters($params)->getQuery();
 
         return $query->execute();
-    }
+    }*/
 
-    public function findbyBar($id) : array
+    /*public function findbyBar($id) : array
     {
         $qb =  $this->createQueryBuilder('b')
             ->select("b.id,b.name,b.price_level,b.rating,b.city,b.cp,b.address,b.lat,b.lon,b.metro,b.price_normal,b.price_happy,b.terrace")
@@ -63,7 +63,7 @@ class BarListRepository extends ServiceEntityRepository
             ->getQuery();
 
         return $qb->execute();
-    }
+    }*/
 
     // /**
     //  * @return BarList[] Returns an array of BarList objects
