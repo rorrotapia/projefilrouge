@@ -29,18 +29,37 @@ class BarListRepository extends ServiceEntityRepository
 
     }
 
-    public function findNearbyBars(float $geolat,float $geolon,int $limitkm) : array
+    public function findNearbyBars(...$params) : array
     {
-        $limitkm = $limitkm*1000;
+        $params = [
+            'latstart' => $params[0],
+            'lonstart' => $params[1],
+            'limitkm' => $params[2]*1000,
+            'terrace' => $params[3]
+        ];
+
         $qb =  $this->createQueryBuilder('b')
             ->select("b.id,b.name,b.price_level,b.rating,b.city,b.cp,b.address,b.lat,b.lon,b.metro,b.price_normal,b.price_happy,b.terrace,
             SQRT(POWER(69.1 * (b.lat - :latstart  ), 2) + POWER(69.1 * ( :lonstart - b.lon) * COS(b.lat / 57.3), 2)) * 1.609344 AS distance")
-            ->having("distance <= :limitkm")
+            ->having("distance <= :limitkm");
 
-            ->setMaxResults(20)
-            ->setParameter( 'latstart',$geolat)
-            ->setParameter( 'lonstart',$geolon)
-            ->setParameter( 'limitkm',$limitkm)
+        if ($params['terrace'] != null) {
+            $where = $qb->where("b.terrace = :terrace");
+        } else {
+            $where = $qb;
+        }
+
+        $query = $where->setMaxResults(20)->setParameters($params)->getQuery();
+
+        return $query->execute();
+    }
+
+    public function findbyBar($id) : array
+    {
+        $qb =  $this->createQueryBuilder('b')
+            ->select("b.id,b.name,b.price_level,b.rating,b.city,b.cp,b.address,b.lat,b.lon,b.metro,b.price_normal,b.price_happy,b.terrace")
+            ->where("b.id = :id")
+            ->setParameter( 'id',$id)
             ->getQuery();
 
         return $qb->execute();

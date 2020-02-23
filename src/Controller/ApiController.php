@@ -64,17 +64,40 @@ class ApiController extends AbstractController
      */
     public function getNearbyBar (BarListRepository $repository, GeojsonConverter $geojsonConverter, Request $request)
     {
-        $lat = $request->query->get('lat');
-        $lon = $request->query->get('lon');
-        $limitkm = (isset($limitkm)) ? $request->query->get('limitkm') : 50;
+        $params[] = $request->query->get('lat');
+        $params[] = $request->query->get('lon');
+        $km = $request->query->get('limitkm');
+        $params[] = (isset($km)) ? $km : "50";
+        $params[] = $request->query->get('terrace');
+
 
         //On recupere la liste de bars
-        $bars = $repository->findNearbyBars($lat, $lon, $limitkm);
+        $bars = $repository->findNearbyBars(...$params);
 
         $encoders = [new JsonEncoder()];
         $normalizers = [new ObjectNormalizer()];
         $serializer = new Serializer($normalizers,$encoders);
         $jsonContent = $serializer->serialize($bars, 'json');
+        $geoJson = $geojsonConverter->convertGeoJson($jsonContent);
+        $response = new Response($geoJson);
+        $response->headers->set('Content-Type', 'application/json');
+
+        return $response;
+    }
+
+    /**
+     * @Route("/api/bar/{id}", name="api_barbyid", methods={"GET"})
+     *
+     */
+    public function getBarbyId (BarListRepository $repository, GeojsonConverter $geojsonConverter, $id)
+    {
+        //On recupere la liste de bars
+        $bar = $repository->findbyBar($id);
+
+        $encoders = [new JsonEncoder()];
+        $normalizers = [new ObjectNormalizer()];
+        $serializer = new Serializer($normalizers,$encoders);
+        $jsonContent = $serializer->serialize($bar, 'json');
         $geoJson = $geojsonConverter->convertGeoJson($jsonContent);
         $response = new Response($geoJson);
         $response->headers->set('Content-Type', 'application/json');
