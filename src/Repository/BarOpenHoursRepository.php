@@ -20,6 +20,29 @@ class BarOpenHoursRepository extends ServiceEntityRepository
         parent::__construct($registry, BarOpenHours::class);
     }
 
+    public function findAllBarsNow($day) {
+
+        $qb =  $this->createQueryBuilder('h')
+            ->addSelect('b')
+            ->select("
+                b.id,
+                b.lat,
+                b.lon,
+                b.price_normal,
+                b.price_happy,
+                b.terrace,
+                h.start_hour,
+                h.end_hour"
+            )
+            ->leftJoin('App\Entity\BarList', 'b',   Expr\Join::WITH,  'b.id = h.id_bar')
+            ->where("h.days LIKE :day")
+            ->setParameter('day',"%".$day."%")
+            ->getQuery();
+
+        return $qb->execute();
+
+    }
+
     public function findBars(...$params) : array
     {
         $params = [
@@ -57,7 +80,7 @@ class BarOpenHoursRepository extends ServiceEntityRepository
         return $qb->execute();
     }
 
-    public function findbyBar(...$params) : array
+    public function findBarById(...$params) : array
     {
         $params = [
             'id' => $params[0],

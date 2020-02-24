@@ -20,12 +20,11 @@ class JsonFormatter
                 ),
                 'properties' => [
                     "id" => $value['id'],
-                    "name" => $value['name'],
                     "priceNormal" => $value['price_normal'],
                     "priceHappy" => $value['price_happy'],
                     "terrace" => $value['terrace'],
-                    "start_hour" => date ( "H:i",$value['start_hour']['timestamp']),
-                    "end_hour" => date ( "H:i",$value['end_hour']['timestamp']),
+                    "start_hour" => (isset($value['start_hour']['timestamp'])) ? date ( "H:i",$value['start_hour']['timestamp']) : null,
+                    "end_hour" => (isset($value['end_hour']['timestamp'])) ? date ( "H:i",$value['end_hour']['timestamp']) : null,
                 ],
             );
         }

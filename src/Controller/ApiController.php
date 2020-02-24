@@ -31,7 +31,7 @@ class ApiController extends AbstractController
      * @Route("/api", name="api", methods={"GET"})
      *
      */
-    public function getGeojson(BarListRepository $repository, JsonFormatter $geojsonConverter)
+    public function getListBars(BarListRepository $repository, JsonFormatter $geojsonConverter)
     {
         //On recupere la liste de bars
         $bars = $repository->findAllBars();
@@ -60,30 +60,27 @@ class ApiController extends AbstractController
     }
 
 
-   /*
-    public function getNearbyBar (BarListRepository $repository, GeojsonConverter $geojsonConverter, Request $request)
+    /**
+     * @Route("/api/now", name="api_barlist", methods={"GET"})
+     *
+     */
+    public function getListBarsNow (BarOpenHoursRepository $repository, JsonFormatter $jsonFormatter)
     {
-        $params[] = $request->query->get('lat');
-        $params[] = $request->query->get('lon');
-        $km = $request->query->get('limitkm');
-        $params[] = (isset($km)) ? $km : "50";
-        $params[] = $request->query->get('terrace');
-
-
+        $day = getdate ();
+        $day = ($day['wday'] == 0) ? 7 : $day['wday'];
         //On recupere la liste de bars
-        $bars = $repository->findNearbyBars(...$params);
-
+        $bar = $repository->findAllBarsNow($day);
         $encoders = [new JsonEncoder()];
         $normalizers = [new ObjectNormalizer()];
         $serializer = new Serializer($normalizers,$encoders);
-        $jsonContent = $serializer->serialize($bars, 'json');
-        $geoJson = $geojsonConverter->convertGeoJson($jsonContent);
+        $jsonContent = $serializer->serialize($bar, 'json');
+        $geoJson = $jsonFormatter->convertGeoJson($jsonContent);
         $response = new Response($geoJson);
         $response->headers->set('Content-Type', 'application/json');
 
         return $response;
     }
-*/
+
     /**
      * @Route("/api/bar/{id}", name="api_barbyid", methods={"GET"})
      *
@@ -94,7 +91,7 @@ class ApiController extends AbstractController
         $params[] = (int)$id;
         $params[] = ($day['wday'] == 0) ? 7 : $day['wday'];
         //On recupere la liste de bars
-        $bar = $repository->findbyBar(...$params);
+        $bar = $repository->findBarById(...$params);
 
         $encoders = [new JsonEncoder()];
         $normalizers = [new ObjectNormalizer()];

@@ -84,9 +84,15 @@ class BarList
      */
     private $barOpenHours;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\BarHappyHours", mappedBy="id_bar")
+     */
+    private $barHappyHours;
+
     public function __construct()
     {
         $this->barOpenHours = new ArrayCollection();
+        $this->barHappyHours = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -263,6 +269,37 @@ class BarList
             // set the owning side to null (unless already changed)
             if ($barOpenHour->getIdBar() === $this) {
                 $barOpenHour->setIdBar(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|BarHappyHours[]
+     */
+    public function getBarHappyHours(): Collection
+    {
+        return $this->barHappyHours;
+    }
+
+    public function addBarHappyHour(BarHappyHours $barHappyHour): self
+    {
+        if (!$this->barHappyHours->contains($barHappyHour)) {
+            $this->barHappyHours[] = $barHappyHour;
+            $barHappyHour->setIdBar($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBarHappyHour(BarHappyHours $barHappyHour): self
+    {
+        if ($this->barHappyHours->contains($barHappyHour)) {
+            $this->barHappyHours->removeElement($barHappyHour);
+            // set the owning side to null (unless already changed)
+            if ($barHappyHour->getIdBar() === $this) {
+                $barHappyHour->setIdBar(null);
             }
         }
 
