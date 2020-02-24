@@ -105,7 +105,7 @@ class ApiController extends AbstractController
     }
 
     /**
-     * @Route("/api/search/", name="api_search", methods={"GET"})
+     * @Route("/api/searchgeo/", name="api_searchgeo", methods={"GET"})
      *
      */
     public function getBarWithHourOpen (BarListRepository $repository, JsonFormatter $geojsonConverter,Request $request)
@@ -120,11 +120,10 @@ class ApiController extends AbstractController
         $params[] = $request->query->get('starthour');
         $params[] = $request->query->get('endhour');
         $params[] = $request->query->get('price');
-        $params[] = $request->query->get('happy');
 
         //On recupere la liste de bars
-        $bar = $repository->findBars(...$params);
-        dump($bar);
+        $bar = $repository->findBarsGeo(...$params);
+
         $encoders = [new JsonEncoder()];
         $normalizers = [new ObjectNormalizer()];
         $serializer = new Serializer($normalizers,$encoders);
@@ -135,5 +134,33 @@ class ApiController extends AbstractController
 
         return $response;
     }
+
+    /**
+     * @Route("/api/search/", name="api_search", methods={"GET"})
+     *
+     */
+    public function getFilterBars (BarListRepository $repository, JsonFormatter $geojsonConverter,Request $request)
+    {
+        $day = getdate ();
+        $params[] = $request->query->get('terrace');
+        $params[] = ($day['wday'] == 0) ? 7 : $day['wday'];
+        $params[] = $request->query->get('starthour');
+        $params[] = $request->query->get('endhour');
+        $params[] = $request->query->get('price');
+
+        //On recupere la liste de bars
+        $bar = $repository->findBars(...$params);
+
+        $encoders = [new JsonEncoder()];
+        $normalizers = [new ObjectNormalizer()];
+        $serializer = new Serializer($normalizers,$encoders);
+        $jsonContent = $serializer->serialize($bar, 'json');
+        $geoJson = $geojsonConverter->convertGeoJson($jsonContent);
+        $response = new Response($geoJson);
+        $response->headers->set('Content-Type', 'application/json');
+
+        return $response;
+    }
+
 
 }
