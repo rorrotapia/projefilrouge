@@ -120,7 +120,7 @@ class ApiController extends AbstractController
         $params[] = (isset($km)) ? $km : "50";
         $params[] = $request->query->get('terrace');
         $params[] = ($day['wday'] == 0) ? 7 : $day['wday'];
-        $params[] = date("Y-m-d H:i:s");
+        $params[] = $request->query->get('endhour');
 
         //On recupere la liste de bars
         $bar = $repository->findBars(...$params);

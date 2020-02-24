@@ -28,7 +28,7 @@ class BarOpenHoursRepository extends ServiceEntityRepository
             'limitkm' => $params[2]*1000,
             'terrace' => $params[3],
             'day' => "%".$params[4]."%",
-            'currentime' => $params[5],
+            'endhour' => $params[5],
         ];
 
         $qb =  $this->createQueryBuilder('h')
@@ -48,7 +48,7 @@ class BarOpenHoursRepository extends ServiceEntityRepository
             ->leftJoin('App\Entity\BarList', 'b',   Expr\Join::WITH,  'b.id = h.id_bar')
             ->having("distance <= :limitkm")
             ->where("h.days LIKE :day")
-            ->andWhere("h.end_hour <= :currentime")
+            ->andWhere("h.end_hour <= :endhour")
             ->andWhere("b.terrace = :terrace")
             ->setParameters($params)
             ->setMaxResults(20)
@@ -72,8 +72,6 @@ class BarOpenHoursRepository extends ServiceEntityRepository
                 b.city,
                 b.address,
                 b.cp,
-                b.lat,
-                b.lon,
                 b.price_normal,
                 b.price_happy,
                 b.terrace,
