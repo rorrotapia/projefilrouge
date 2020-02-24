@@ -48,10 +48,12 @@ class BarOpenHoursRepository extends ServiceEntityRepository
         $params = [
             'latstart' => $params[0],
             'lonstart' => $params[1],
-            'limitkm' => $params[2]*1000,
-            'terrace' => $params[3],
-            'day' => "%".$params[4]."%",
-            'endhour' => $params[5],
+            'limitkm' => (isset($params[2])) ? $params[2]*1000 : 10000,
+            'terrace' => (isset($params[3])) ? $params[3] : "0,1",
+            'day' =>  $params[4],
+            'starthour' => (isset( $params[5])) ? $params[5] : "00:00",
+            'endhour' => (isset( $params[6])) ? $params[6] : "23:00",
+            'price' => (isset($params[7])) ? $params[7] : 99 ,
         ];
 
         $qb =  $this->createQueryBuilder('h')
@@ -72,7 +74,9 @@ class BarOpenHoursRepository extends ServiceEntityRepository
             ->having("distance <= :limitkm")
             ->where("h.days LIKE :day")
             ->andWhere("h.end_hour <= :endhour")
-            ->andWhere("b.terrace = :terrace")
+            ->andWhere("h.start_hour >= :starthour")
+            ->andWhere("b.terrace IN (:terrace)")
+            ->andWhere("b.price_normal <= :price")
             ->setParameters($params)
             ->setMaxResults(20)
             ->getQuery();

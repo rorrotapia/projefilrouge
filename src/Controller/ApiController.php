@@ -85,7 +85,7 @@ class ApiController extends AbstractController
      * @Route("/api/bar/{id}", name="api_barbyid", methods={"GET"})
      *
      */
-    public function getBarbyId (BarOpenHoursRepository $repository, JsonFormatter $jsonFormatter, $id)
+    public function getBarbyId (BarListRepository $repository, JsonFormatter $jsonFormatter, $id)
     {
         $day = getdate ();
         $params[] = (int)$id;
@@ -108,7 +108,7 @@ class ApiController extends AbstractController
      * @Route("/api/search/", name="api_search", methods={"GET"})
      *
      */
-    public function getBarWithHourOpen (BarOpenHoursRepository $repository, JsonFormatter $geojsonConverter,Request $request)
+    public function getBarWithHourOpen (BarListRepository $repository, JsonFormatter $geojsonConverter,Request $request)
     {
         $km = $request->query->get('limitkm');
         $day = getdate ();
@@ -117,10 +117,14 @@ class ApiController extends AbstractController
         $params[] = (isset($km)) ? $km : "50";
         $params[] = $request->query->get('terrace');
         $params[] = ($day['wday'] == 0) ? 7 : $day['wday'];
+        $params[] = $request->query->get('starthour');
         $params[] = $request->query->get('endhour');
+        $params[] = $request->query->get('price');
+        $params[] = $request->query->get('happy');
 
         //On recupere la liste de bars
         $bar = $repository->findBars(...$params);
+        dump($bar);
         $encoders = [new JsonEncoder()];
         $normalizers = [new ObjectNormalizer()];
         $serializer = new Serializer($normalizers,$encoders);
