@@ -23,8 +23,44 @@ class BarListRepository extends ServiceEntityRepository
     public function findAllBars(...$params) {
 
         $params = [
+            'day' =>  "%".$params[0]."%"
+        ];
+
+        $qb =  $this->createQueryBuilder('b')
+            ->addSelect('o')
+            ->addSelect('h')
+            ->select("
+                b.id,
+                b.name,
+                b.city,
+                b.cp,
+                b.address,
+                b.metro,
+                b.lat,
+                b.lon,
+                b.price_normal,
+                b.price_happy,
+                b.terrace,
+                o.start_hour,
+                o.end_hour,
+                o.days,
+                h.start_happy,
+                h.end_happy,
+                h.days")
+            ->leftJoin('App\Entity\BarOpenHours', 'o',   Expr\Join::WITH,  'b.id = o.id_bar')
+            ->leftJoin('App\Entity\BarHappyHours', 'h',   Expr\Join::WITH,  'b.id = h.id_bar')
+            ->where("o.days LIKE :day")
+            ->setParameters($params)
+            ->getQuery();
+
+        return $qb->execute();
+    }
+
+    public function findAllOpenBars(...$params) {
+
+        $params = [
             'day' =>  "%".$params[0]."%",
-            'currentHour' => (isset( $params[1])) ? $params[1] : "10:00",
+            'currentHour' => $params[1],
         ];
 
         $qb =  $this->createQueryBuilder('b')

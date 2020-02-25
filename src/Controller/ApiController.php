@@ -28,14 +28,14 @@ class ApiController extends AbstractController
 
 
     /**
-     * @Route("/api", name="api", methods={"GET"})
+     * @Route("/api/bars", name="api", methods={"GET"})
      *
      */
     public function getListBars(BarListRepository $repository, JsonFormatter $geojsonConverter, Request $request)
     {
         $day = getdate ();
         $params[] = ($day['wday'] == 0) ? 7 : $day['wday'];
-        $params[] = $request->query->get('currentHour');
+
         //On recupere la liste de bars
         $bars = $repository->findAllBars(...$params);
 
@@ -62,6 +62,40 @@ class ApiController extends AbstractController
         return $response;
     }
 
+    /**
+     * @Route("/api/bars/open", name="api", methods={"GET"})
+     *
+     */
+    public function getListOpenBars(BarListRepository $repository, JsonFormatter $geojsonConverter, Request $request)
+    {
+        $day = getdate ();
+        $params[] = ($day['wday'] == 0) ? 7 : $day['wday'];
+        $params[] = $request->query->get('currentHour');
+        //On recupere la liste de bars
+        $bars = $repository->findAllOpenBars(...$params);
+
+        //on specifie qu'on utilise un décodeur json
+        $encoders = [new JsonEncoder()];
+        //on  instance un normaliseur pour convertir en tableau
+        $normalizers = [new ObjectNormalizer()];
+
+        //on fait la conversion en json
+        //on instancie le convertiseur
+        $serializer = new Serializer($normalizers,$encoders);
+
+        //on convertit en json
+        $jsonContent = $serializer->serialize($bars, 'json');
+
+        //On convertir le json à geojson
+        $geoJson = $geojsonConverter->convertGeoJson($jsonContent);
+
+        //on instencie la reponse
+        $response = new Response($geoJson);
+        //on ajoute l'entete HTTP
+        $response->headers->set('Content-Type', 'application/json');
+        //on envoie la reponse
+        return $response;
+    }
 
     /**
      * @Route("/api/bar/{id}", name="api_barbyid", methods={"GET"})
@@ -87,7 +121,7 @@ class ApiController extends AbstractController
     }
 
     /**
-     * @Route("/api/searchgeo/", name="api_searchgeo", methods={"GET"})
+     * @Route("/api/bars/searchgeo/", name="api_searchgeo", methods={"GET"})
      *
      */
     public function getBarWithHourOpen (BarListRepository $repository, JsonFormatter $geojsonConverter,Request $request)
@@ -118,7 +152,7 @@ class ApiController extends AbstractController
     }
 
     /**
-     * @Route("/api/search/", name="api_search", methods={"GET"})
+     * @Route("/api/bars/search/", name="api_search", methods={"GET"})
      *
      */
     public function getFilterBars (BarListRepository $repository, JsonFormatter $geojsonConverter,Request $request)

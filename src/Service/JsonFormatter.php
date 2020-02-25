@@ -24,6 +24,7 @@ class JsonFormatter
                     "name" => $value['name'],
                     "address" => $value['address'],
                     "city" => $value['city'],
+                    "cp" => $value['cp'],
                     "metro" => $value['metro'],
                     "priceNormal" => $value['price_normal'],
                     "priceHappy" => $value['price_happy'],
