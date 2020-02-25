@@ -35,7 +35,7 @@ class ApiController extends AbstractController
     {
         $day = getdate ();
         $params[] = ($day['wday'] == 0) ? 7 : $day['wday'];
-        $params[] = $request->query->get('starthour');
+        $params[] = $request->query->get('currentHour');
         //On recupere la liste de bars
         $bars = $repository->findAllBars(...$params);
 

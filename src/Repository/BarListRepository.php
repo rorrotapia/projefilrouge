@@ -24,7 +24,7 @@ class BarListRepository extends ServiceEntityRepository
 
         $params = [
             'day' =>  "%".$params[0]."%",
-            'starthour' => (isset( $params[1])) ? $params[1] : "10:00",
+            'currentHour' => (isset( $params[1])) ? $params[1] : "10:00",
         ];
 
         $qb =  $this->createQueryBuilder('b')
@@ -51,7 +51,8 @@ class BarListRepository extends ServiceEntityRepository
             ->leftJoin('App\Entity\BarOpenHours', 'o',   Expr\Join::WITH,  'b.id = o.id_bar')
             ->leftJoin('App\Entity\BarHappyHours', 'h',   Expr\Join::WITH,  'b.id = h.id_bar')
             ->where("o.days LIKE :day")
-            ->andWhere("o.start_hour >= :starthour")
+            ->andWhere("o.end_hour > :currentHour")
+            ->andWhere("o.start_hour < :currentHour")
             ->setParameters($params)
             ->getQuery();
 
