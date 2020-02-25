@@ -70,7 +70,7 @@ class ApiController extends AbstractController
     {
         $day = getdate ();
         $params[] = ($day['wday'] == 0) ? 7 : $day['wday'];
-        $params[] = $request->query->get('currentHour');
+        $params[] = $request->query->get('currentTime');
         //On recupere la liste de bars
         $bars = $repository->findAllOpenBars(...$params);
 
