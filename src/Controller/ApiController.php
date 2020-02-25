@@ -28,7 +28,7 @@ class ApiController extends AbstractController
 
 
     /**
-     * @Route("/api/bars", name="api", methods={"GET"})
+     * @Route("/api/bars", name="bars", methods={"GET"})
      *
      */
     public function getListBars(BarListRepository $repository, JsonFormatter $geojsonConverter, Request $request)
@@ -63,7 +63,7 @@ class ApiController extends AbstractController
     }
 
     /**
-     * @Route("/api/bars/open", name="api", methods={"GET"})
+     * @Route("/api/bars/open", name="barsOpen", methods={"GET"})
      *
      */
     public function getListOpenBars(BarListRepository $repository, JsonFormatter $geojsonConverter, Request $request)
@@ -98,7 +98,7 @@ class ApiController extends AbstractController
     }
 
     /**
-     * @Route("/api/bar/{id}", name="api_barbyid", methods={"GET"})
+     * @Route("/api/bar/{id}", name="barById", methods={"GET"})
      *
      */
     public function getBarbyId (BarListRepository $repository, JsonFormatter $jsonFormatter, $id)
@@ -121,7 +121,7 @@ class ApiController extends AbstractController
     }
 
     /**
-     * @Route("/api/bars/searchgeo/", name="api_searchgeo", methods={"GET"})
+     * @Route("/api/bars/searchgeo/", name="bars_searchGeo", methods={"GET"})
      *
      */
     public function getBarWithHourOpen (BarListRepository $repository, JsonFormatter $geojsonConverter,Request $request)
@@ -152,7 +152,7 @@ class ApiController extends AbstractController
     }
 
     /**
-     * @Route("/api/bars/search/", name="api_search", methods={"GET"})
+     * @Route("/api/bars/search/", name="bars_search", methods={"GET"})
      *
      */
     public function getFilterBars (BarListRepository $repository, JsonFormatter $geojsonConverter,Request $request)
