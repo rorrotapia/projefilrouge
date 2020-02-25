@@ -187,43 +187,4 @@ class BarListRepository extends ServiceEntityRepository
         return $qb->execute();
     }
 
-    /*public function findbyBar($id) : array
-    {
-        $qb =  $this->createQueryBuilder('b')
-            ->select("b.id,b.name,b.price_level,b.rating,b.city,b.cp,b.address,b.lat,b.lon,b.metro,b.price_normal,b.price_happy,b.terrace")
-            ->where("b.id = :id")
-            ->setParameter( 'id',$id)
-            ->getQuery();
-
-        return $qb->execute();
-    }*/
-
-    // /**
-    //  * @return BarList[] Returns an array of BarList objects
-    //  */
-    /*
-    public function findByExampleField($value)
-    {
-        return $this->createQueryBuilder('b')
-            ->andWhere('b.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('b.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?BarList
-    {
-        return $this->createQueryBuilder('b')
-            ->andWhere('b.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }
