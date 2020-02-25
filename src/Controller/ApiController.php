@@ -23,7 +23,7 @@ class ApiController extends AbstractController
     */
     public function index()
     {
-        return $this->redirectToRoute("api");
+        return $this->redirectToRoute("api/bars");
     }
 
 
