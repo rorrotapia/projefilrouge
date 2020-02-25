@@ -9,6 +9,7 @@ class JsonFormatter
         $original_data = json_decode($jsonData, true);
         $features = array();
         foreach($original_data as $key => $value) {
+
             $features[] = array(
                 'type' => 'Feature',
                 'geometry' => array(

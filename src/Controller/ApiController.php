@@ -31,10 +31,13 @@ class ApiController extends AbstractController
      * @Route("/api", name="api", methods={"GET"})
      *
      */
-    public function getListBars(BarListRepository $repository, JsonFormatter $geojsonConverter)
+    public function getListBars(BarListRepository $repository, JsonFormatter $geojsonConverter, Request $request)
     {
+        $day = getdate ();
+        $params[] = ($day['wday'] == 0) ? 7 : $day['wday'];
+        $params[] = $request->query->get('starthour');
         //On recupere la liste de bars
-        $bars = $repository->findAllBars();
+        $bars = $repository->findAllBars(...$params);
 
         //on specifie qu'on utilise un décodeur json
         $encoders = [new JsonEncoder()];
@@ -59,27 +62,6 @@ class ApiController extends AbstractController
         return $response;
     }
 
-
-    /**
-     * @Route("/api/now", name="api_barlist", methods={"GET"})
-     *
-     */
-    public function getListBarsNow (BarOpenHoursRepository $repository, JsonFormatter $jsonFormatter)
-    {
-        $day = getdate ();
-        $day = ($day['wday'] == 0) ? 7 : $day['wday'];
-        //On recupere la liste de bars
-        $bar = $repository->findAllBarsNow($day);
-        $encoders = [new JsonEncoder()];
-        $normalizers = [new ObjectNormalizer()];
-        $serializer = new Serializer($normalizers,$encoders);
-        $jsonContent = $serializer->serialize($bar, 'json');
-        $geoJson = $jsonFormatter->convertGeoJson($jsonContent);
-        $response = new Response($geoJson);
-        $response->headers->set('Content-Type', 'application/json');
-
-        return $response;
-    }
 
     /**
      * @Route("/api/bar/{id}", name="api_barbyid", methods={"GET"})
@@ -117,8 +99,8 @@ class ApiController extends AbstractController
         $params[] = (isset($km)) ? $km : "50";
         $params[] = $request->query->get('terrace');
         $params[] = ($day['wday'] == 0) ? 7 : $day['wday'];
+        $params[] = $request->query->get('starthappy');
         $params[] = $request->query->get('starthour');
-        $params[] = $request->query->get('endhour');
         $params[] = $request->query->get('price');
 
         //On recupere la liste de bars
@@ -146,7 +128,6 @@ class ApiController extends AbstractController
         $params[] = ($day['wday'] == 0) ? 7 : $day['wday'];
         $params[] = $request->query->get('starthour');
         $params[] = $request->query->get('endhour');
-        $params[] = $request->query->get('price');
 
         //On recupere la liste de bars
         $bar = $repository->findBars(...$params);

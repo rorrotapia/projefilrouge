@@ -43,46 +43,6 @@ class BarOpenHoursRepository extends ServiceEntityRepository
 
     }
 
-    public function findBars(...$params) : array
-    {
-        $params = [
-            'latstart' => $params[0],
-            'lonstart' => $params[1],
-            'limitkm' => (isset($params[2])) ? $params[2]*1000 : 10000,
-            'terrace' => (isset($params[3])) ? $params[3] : "0,1",
-            'day' =>  $params[4],
-            'starthour' => (isset( $params[5])) ? $params[5] : "00:00",
-            'endhour' => (isset( $params[6])) ? $params[6] : "23:00",
-            'price' => (isset($params[7])) ? $params[7] : 99 ,
-        ];
-
-        $qb =  $this->createQueryBuilder('h')
-            ->addSelect('b')
-            ->select("
-                b.id,
-                b.name,
-                b.lat,
-                b.lon,
-                b.price_normal,
-                b.price_happy,
-                b.terrace,
-                h.start_hour,
-                h.end_hour,
-                h.days,
-                SQRT(POWER(69.1 * (b.lat - :latstart  ), 2) + POWER(69.1 * ( :lonstart - b.lon) * COS(b.lat / 57.3), 2)) * 1.609344 AS distance")
-            ->leftJoin('App\Entity\BarList', 'b',   Expr\Join::WITH,  'b.id = h.id_bar')
-            ->having("distance <= :limitkm")
-            ->where("h.days LIKE :day")
-            ->andWhere("h.end_hour <= :endhour")
-            ->andWhere("h.start_hour >= :starthour")
-            ->andWhere("b.terrace IN (:terrace)")
-            ->andWhere("b.price_normal <= :price")
-            ->setParameters($params)
-            ->setMaxResults(20)
-            ->getQuery();
-
-        return $qb->execute();
-    }
 
     public function findBarById(...$params) : array
     {
