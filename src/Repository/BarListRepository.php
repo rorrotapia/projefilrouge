@@ -151,9 +151,9 @@ class BarListRepository extends ServiceEntityRepository
         $params = [
             'terrace' => (isset($params[0])) ? $params[0] : "0,1",
             'day' =>  "%".$params[1]."%",
-            'endHappy' => (isset( $params[2])) ? $params[2] : "23:00",
-            'endHour' => (isset( $params[3])) ? $params[3] : "23:00",
-            'price' => (isset($params[4])) ? $params[4] : 99,
+            'price' => (isset($params[3])) ? $params[3] : 99,
+            // 'endHappy' => (isset( $params[2])) ? $params[2] : "23:00",
+            // 'endHour' => (isset( $params[3])) ? $params[3] : "23:00",
         ];
 
         $qb =  $this->createQueryBuilder('b')

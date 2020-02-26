@@ -160,10 +160,10 @@ class ApiController extends AbstractController
         $day = getdate ();
         $params[] = $request->query->get('terrace');
         $params[] = ($day['wday'] == 0) ? 7 : $day['wday'];
-        // $params[] = $request->query->get('endHappy');
-        // $params[] = $request->query->get('endHour');
-        // $params[] = $request->query->get('currentTime');
         $params[] = $request->query->get('price');
+        $params[] = $request->query->get('endHappy');
+        $params[] = $request->query->get('endHour');
+        $params[] = $request->query->get('currentTime');
 
         //On recupere la liste de bars
         $bar = $repository->findBars(...$params);
