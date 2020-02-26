@@ -158,15 +158,16 @@ class ApiController extends AbstractController
     public function getFilteredBars (BarListRepository $repository, JsonFormatter $geojsonConverter,Request $request)
     {
         $day = getdate ();
-        $params[] = $request->query->get('terrace');
-        $params[] = ($day['wday'] == 0) ? 7 : $day['wday'];
-        $params[] = $request->query->get('price');
-        $params[] = $request->query->get('endHappy');
-        $params[] = $request->query->get('endHour');
-        $params[] = $request->query->get('currentTime');
-
+        $params = [
+            'day' => ($day['wday'] === 0) ? 7 : "%".$day['wday']."%",
+            'price' => $request->query->get('price') ?? 99,
+            'terrace' => $request->query->get('terrace') ?? "0,1",
+            'openAfter' => $request->query->get('openAfter') ?? "23:00",
+            'happyAfter' => $request->query->get('happyAfter') ?? "23:00"
+        ];
+        
         //On recupere la liste de bars
-        $bar = $repository->findBars(...$params);
+        $bar = $repository->findBars($params);
 
         $encoders = [new JsonEncoder()];
         $normalizers = [new ObjectNormalizer()];
