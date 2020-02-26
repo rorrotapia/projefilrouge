@@ -121,7 +121,7 @@ class ApiController extends AbstractController
     }
 
     /**
-     * @Route("/api/bars/searchgeo/", name="bars_searchGeo", methods={"GET"})
+     * @Route("/api/bars/searchgeo", name="bars_searchGeo", methods={"GET"})
      *
      */
     public function getBarWithHourOpen (BarListRepository $repository, JsonFormatter $geojsonConverter,Request $request)
@@ -152,16 +152,18 @@ class ApiController extends AbstractController
     }
 
     /**
-     * @Route("/api/bars/search/", name="bars_search", methods={"GET"})
+     * @Route("/api/bars/search", name="bars_search", methods={"GET"})
      *
      */
-    public function getFilterBars (BarListRepository $repository, JsonFormatter $geojsonConverter,Request $request)
+    public function getFilteredBars (BarListRepository $repository, JsonFormatter $geojsonConverter,Request $request)
     {
         $day = getdate ();
         $params[] = $request->query->get('terrace');
         $params[] = ($day['wday'] == 0) ? 7 : $day['wday'];
-        $params[] = $request->query->get('starthour');
-        $params[] = $request->query->get('endhour');
+        // $params[] = $request->query->get('endHappy');
+        // $params[] = $request->query->get('endHour');
+        // $params[] = $request->query->get('currentTime');
+        $params[] = $request->query->get('price');
 
         //On recupere la liste de bars
         $bar = $repository->findBars(...$params);
@@ -176,6 +178,4 @@ class ApiController extends AbstractController
 
         return $response;
     }
-
-
 }

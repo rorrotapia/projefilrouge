@@ -86,7 +86,7 @@ class BarListRepository extends ServiceEntityRepository
                 h.days")
             ->leftJoin('App\Entity\BarOpenHours', 'o',   Expr\Join::WITH,  'b.id = o.id_bar')
             ->leftJoin('App\Entity\BarHappyHours', 'h',   Expr\Join::WITH,  'b.id = h.id_bar')
-            // ->where("o.days LIKE :day")
+            ->where("o.days LIKE :day")
             ->andWhere("(o.start_hour < o.end_hour AND o.end_hour > :currentTime AND o.start_hour < :currentTime) OR (o.start_hour > o.end_hour AND (o.end_hour > :currentTime OR o.start_hour < :currentTime))")
             ->setParameters($params)
             ->getQuery();
@@ -151,9 +151,9 @@ class BarListRepository extends ServiceEntityRepository
         $params = [
             'terrace' => (isset($params[0])) ? $params[0] : "0,1",
             'day' =>  "%".$params[1]."%",
-            'starthour' => (isset( $params[2])) ? $params[2] : "23:00",
-            'price' => (isset($params[3])) ? $params[3] : 99,
-            'starthappy' => (isset( $params[4])) ? $params[4] : "23:00",
+            'endHappy' => (isset( $params[2])) ? $params[2] : "23:00",
+            'endHour' => (isset( $params[3])) ? $params[3] : "23:00",
+            'price' => (isset($params[4])) ? $params[4] : 99,
         ];
 
         $qb =  $this->createQueryBuilder('b')
@@ -180,13 +180,12 @@ class BarListRepository extends ServiceEntityRepository
             ->leftJoin('App\Entity\BarOpenHours', 'o',   Expr\Join::WITH,  'b.id = o.id_bar')
             ->leftJoin('App\Entity\BarHappyHours', 'h',   Expr\Join::WITH,  'b.id = h.id_bar')
             ->where("o.days LIKE :day")
-            ->andWhere("o.start_hour <= :starthour")
+            ->andWhere("h.days LIKE :day")
+            // ->andWhere("o.end_hour <= :endHour")
+            // ->andWhere("h.end_happy <= :endHappy")
             ->andWhere("b.terrace IN (:terrace)")
             ->andWhere("b.price_normal <= :price")
-            ->andWhere("h.start_happy <= :starthappy")
-            ->andWhere("h.days LIKE :day")
             ->setParameters($params)
-            ->setMaxResults(20)
             ->getQuery();
 
         return $qb->execute();
