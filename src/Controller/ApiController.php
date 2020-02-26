@@ -31,7 +31,7 @@ class ApiController extends AbstractController
      * @Route("/api/bars", name="bars", methods={"GET"})
      *
      */
-    public function getListBars(BarListRepository $repository, JsonFormatter $geojsonConverter, Request $request)
+    public function getBars(BarListRepository $repository, JsonFormatter $geojsonConverter, Request $request)
     {
         $day = getdate ();
         $params[] = ($day['wday'] == 0) ? 7 : $day['wday'];
@@ -66,7 +66,7 @@ class ApiController extends AbstractController
      * @Route("/api/bars/open", name="barsOpen", methods={"GET"})
      *
      */
-    public function getListOpenBars(BarListRepository $repository, JsonFormatter $geojsonConverter, Request $request)
+    public function getOpenBars(BarListRepository $repository, JsonFormatter $geojsonConverter, Request $request)
     {
         $day = getdate ();
         $params[] = ($day['wday'] == 0) ? 7 : $day['wday'];
