@@ -20,6 +20,7 @@ class JsonFormatter
                     ],
                 ),
                 'properties' => [
+                    "cluster" => false,
                     "id" => $value['id'],
                     "name" => $value['name'],
                     "address" => $value['address'],
