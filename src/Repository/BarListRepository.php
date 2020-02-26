@@ -86,7 +86,7 @@ class BarListRepository extends ServiceEntityRepository
                 h.days")
             ->leftJoin('App\Entity\BarOpenHours', 'o',   Expr\Join::WITH,  'b.id = o.id_bar')
             ->leftJoin('App\Entity\BarHappyHours', 'h',   Expr\Join::WITH,  'b.id = h.id_bar')
-            ->where("o.days LIKE :day")
+            // ->where("o.days LIKE :day")
             ->andWhere("(o.start_hour < o.end_hour AND o.end_hour > :currentTime AND o.start_hour < :currentTime) OR (o.start_hour > o.end_hour AND (o.end_hour > :currentTime OR o.start_hour < :currentTime))")
             ->setParameters($params)
             ->getQuery();
