@@ -107,13 +107,15 @@ class BarListRepository extends ServiceEntityRepository
                 o.days,
                 h.start_happy,
                 h.end_happy,
-                h.days as days_happy")
+                h.days as days_happy,
+                CASE WHEN h.start_happy < :currentTime THEN b.price_happy WHEN h.end_happy > :currentTime THEN b.price_happy ELSE b.price_normal END AS price_final")
             ->leftJoin('App\Entity\BarOpenHours', 'o',   Expr\Join::WITH,  'b.id = o.id_bar')
             ->leftJoin('App\Entity\BarHappyHours', 'h',   Expr\Join::WITH,  'b.id = h.id_bar')
+            // @TODO : currentPrice
+            ->having("price_final < :price")
             ->where("o.days LIKE :day")
             ->andWhere("h.days LIKE :day")
-            // @TODO : currentPrice
-            ->andWhere("b.price_normal <= :price OR b.price_happy <= :price")
+            ->andWhere("(o.start_hour < o.end_hour AND o.end_hour > :currentTime AND o.start_hour < :currentTime) OR (o.start_hour > o.end_hour AND (o.end_hour > :currentTime OR o.start_hour < :currentTime))")
             ->andWhere("b.terrace IN (:terrace)")
             ->andWhere("(o.start_hour < o.end_hour AND o.end_hour > :openAfter AND o.start_hour < :openAfter) OR (o.start_hour > o.end_hour AND (o.end_hour > :openAfter OR o.start_hour < :openAfter))")
             ->andWhere("(h.start_happy < h.end_happy AND h.end_happy > :happyAfter AND h.start_happy < :happyAfter) OR (h.start_happy > h.end_happy AND (h.end_happy > :happyAfter OR h.start_happy < :happyAfter))")

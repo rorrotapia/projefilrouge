@@ -103,7 +103,8 @@ class ApiController extends AbstractController
             'price' => $request->query->get('price') ?? 99,
             'terrace' => $request->query->get('terrace') ?? "0,1",
             'openAfter' => $request->query->get('openAfter') ?? "23:00",
-            'happyAfter' => $request->query->get('happyAfter') ?? "23:00"
+            'happyAfter' => $request->query->get('happyAfter') ?? "23:00",
+            'currentTime' => date("H:i:s")
         ];
         
         //On recupere la liste de bars
