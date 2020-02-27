@@ -29,7 +29,7 @@ class JsonFormatter
                     "metro" => $value['metro'],
                     "priceNormal" => $value['price_normal'],
                     "priceHappy" => $value['price_happy'],
-                    "priceCurrent" => ($value['pricecurrent'] == "0.00") ? $value['price_normal'] : $value['pricecurrent'],
+                    "priceCurrent" => ($value['pricecurrent'] === null) ? $value['price_normal'] : $value['pricecurrent'],
                     "distance" => $value['distance'] ?? null,
                     "terrace" => $value['terrace'],
                     "start_hour" => (isset($value['start_hour']['timestamp'])) ? date ( "H:i",$value['start_hour']['timestamp']) : null,
