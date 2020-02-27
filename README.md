@@ -1,5 +1,5 @@
 
-# Cheers-app
+# Cheers-api
 
 ## Projet fil rouge - HETIC
 ### Link : https://cheers-app.netlify.com/
