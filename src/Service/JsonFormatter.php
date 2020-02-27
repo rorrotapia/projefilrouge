@@ -15,8 +15,8 @@ class JsonFormatter
                 'geometry' => array(
                     'type' => 'Point',
                     'coordinates' => [
-                        $value['lat'],
-                        $value['lon']
+                        $value['lon'],
+                        $value['lat']
                     ],
                 ),
                 'properties' => [
