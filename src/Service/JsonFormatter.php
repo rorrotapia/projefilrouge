@@ -15,11 +15,12 @@ class JsonFormatter
                 'geometry' => array(
                     'type' => 'Point',
                     'coordinates' => [
-                        $value['lat'],
-                        $value['lon']
+                        $value['lon'],
+                        $value['lat']
                     ],
                 ),
                 'properties' => [
+                    "cluster" => false,
                     "id" => $value['id'],
                     "name" => $value['name'],
                     "address" => $value['address'],
@@ -28,8 +29,8 @@ class JsonFormatter
                     "metro" => $value['metro'],
                     "priceNormal" => $value['price_normal'],
                     "priceHappy" => $value['price_happy'],
+                    "distance" => $value['distance'] ?? null,
                     "terrace" => $value['terrace'],
-                    "distance" => (isset($value['distance'])) ? $value['distance'] : null,
                     "start_hour" => (isset($value['start_hour']['timestamp'])) ? date ( "H:i",$value['start_hour']['timestamp']) : null,
                     "end_hour" => (isset($value['end_hour']['timestamp'])) ? date ( "H:i",$value['end_hour']['timestamp']) : null,
                     "start_happy" => (isset($value['start_happy']['timestamp'])) ? date ( "H:i",$value['start_happy']['timestamp']) : null,

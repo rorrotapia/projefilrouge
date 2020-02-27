@@ -33,13 +33,15 @@ class ApiController extends AbstractController
      * @Route("/api/bars", name="bars", methods={"GET"})
      *
      */
-    public function getListBars(BarListRepository $repository, JsonFormatter $geojsonConverter, Request $request)
+    public function getBars(BarListRepository $repository, JsonFormatter $geojsonConverter)
     {
         $day = getdate ();
-        $params[] = ($day['wday'] == 0) ? 7 : $day['wday'];
+        $params = [
+            'day' => ($day['wday'] === 0) ? 7 : "%".$day['wday']."%",
+        ];
 
         //On recupere la liste de bars
-        $bars = $repository->findAllBars(...$params);
+        $bars = $repository->findAllBars($params);
 
         //on specifie qu'on utilise un décodeur json
         $encoders = [new JsonEncoder()];
@@ -68,79 +70,47 @@ class ApiController extends AbstractController
      * @Route("/api/bars/open", name="barsOpen", methods={"GET"})
      *
      */
-    public function getListOpenBars(BarListRepository $repository, JsonFormatter $geojsonConverter, Request $request)
+    public function getOpenBars(BarListRepository $repository, JsonFormatter $geojsonConverter)
     {
         $day = getdate ();
-        $params[] = ($day['wday'] == 0) ? 7 : $day['wday'];
-        $params[] = $request->query->get('currentTime');
+        $params = [
+            'day' => ($day['wday'] === 0) ? 7 : "%".$day['wday']."%",
+            'currentTime' => date("H:i:s"),
+        ];
         //On recupere la liste de bars
-        $bars = $repository->findAllOpenBars(...$params);
+        $bars = $repository->findAllOpenBars($params);
 
-        //on specifie qu'on utilise un décodeur json
         $encoders = [new JsonEncoder()];
-        //on  instance un normaliseur pour convertir en tableau
         $normalizers = [new ObjectNormalizer()];
-
-        //on fait la conversion en json
-        //on instancie le convertiseur
         $serializer = new Serializer($normalizers,$encoders);
-
-        //on convertit en json
         $jsonContent = $serializer->serialize($bars, 'json');
-
-        //On convertir le json à geojson
         $geoJson = $geojsonConverter->convertGeoJson($jsonContent);
-
-        //on instencie la reponse
         $response = new Response($geoJson);
-        //on ajoute l'entete HTTP
         $response->headers->set('Content-Type', 'application/json');
         //on envoie la reponse
         return $response;
     }
 
-    /**
-     * @Route("/api/bar/{id}", name="barById", methods={"GET"})
-     *
-     */
-    public function getBarbyId (BarListRepository $repository, JsonFormatter $jsonFormatter, $id)
-    {
-        $day = getdate ();
-        $params[] = (int)$id;
-        $params[] = ($day['wday'] == 0) ? 7 : $day['wday'];
-        //On recupere la liste de bars
-        $bar = $repository->findBarById(...$params);
 
-        $encoders = [new JsonEncoder()];
-        $normalizers = [new ObjectNormalizer()];
-        $serializer = new Serializer($normalizers,$encoders);
-        $jsonContent = $serializer->serialize($bar, 'json');
-        $newJson = $jsonFormatter->formatDate($jsonContent);
-        $response = new Response($newJson);
-        $response->headers->set('Content-Type', 'application/json');
-
-        return $response;
-    }
 
     /**
-     * @Route("/api/bars/searchgeo/", name="bars_searchGeo", methods={"GET"})
+     * @Route("/api/bars/search", name="bars_search", methods={"GET"})
      *
      */
-    public function getBarWithHourOpen (BarListRepository $repository, JsonFormatter $geojsonConverter,Request $request)
+    public function getFilteredBars (BarListRepository $repository, JsonFormatter $geojsonConverter,Request $request)
     {
-        $km = $request->query->get('limitkm');
         $day = getdate ();
-        $params[] = $request->query->get('lat');
-        $params[] = $request->query->get('lon');
-        $params[] = (isset($km)) ? $km : "50";
-        $params[] = $request->query->get('terrace');
-        $params[] = ($day['wday'] == 0) ? 7 : $day['wday'];
-        $params[] = $request->query->get('starthappy');
-        $params[] = $request->query->get('starthour');
-        $params[] = $request->query->get('price');
-
+        $params = [
+            'day' => ($day['wday'] === 0) ? 7 : "%".$day['wday']."%",
+            'price' => $request->query->get('price') ?? 99,
+            'terrace' => $request->query->get('terrace') ?? "0,1",
+            'openAfter' => $request->query->get('openAfter') ?? "23:00",
+            'happyAfter' => $request->query->get('happyAfter') ?? "23:00",
+            'currentTime' => date("H:i:s")
+        ];
+        
         //On recupere la liste de bars
-        $bar = $repository->findBarsGeo(...$params);
+        $bar = $repository->findBars($params);
 
         $encoders = [new JsonEncoder()];
         $normalizers = [new ObjectNormalizer()];
@@ -154,19 +124,22 @@ class ApiController extends AbstractController
     }
 
     /**
-     * @Route("/api/bars/search/", name="bars_search", methods={"GET"})
+     * @Route("/api/bars/searchgeo/", name="bars_search_geo", methods={"GET"})
      *
      */
-    public function getFilterBars (BarListRepository $repository, JsonFormatter $geojsonConverter,Request $request)
+    public function getFilteredBarsGeo (BarListRepository $repository, JsonFormatter $geojsonConverter,Request $request)
     {
         $day = getdate ();
-        $params[] = $request->query->get('terrace');
-        $params[] = ($day['wday'] == 0) ? 7 : $day['wday'];
-        $params[] = $request->query->get('starthour');
-        $params[] = $request->query->get('endhour');
+        $params = [
+            'day' => ($day['wday'] === 0) ? 7 : "%".$day['wday']."%",
+            'currentTime' => date("H:i:s"),
+            'lat' => $request->query->get('lat') ?? 2,
+            'lon' => $request->query->get('lon') ?? 44
+        ];
+        $limit = $request->query->get('limit') ?? 20;
 
         //On recupere la liste de bars
-        $bar = $repository->findBars(...$params);
+        $bar = $repository->findBarGeo($params,$limit);
 
         $encoders = [new JsonEncoder()];
         $normalizers = [new ObjectNormalizer()];

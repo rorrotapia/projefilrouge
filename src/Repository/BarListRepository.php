@@ -20,12 +20,8 @@ class BarListRepository extends ServiceEntityRepository
         parent::__construct($registry, BarList::class);
     }
 
-    public function findAllBars(...$params) {
-
-        $params = [
-            'day' =>  "%".$params[0]."%"
-        ];
-
+    public function findAllBars($params)
+    {
         $qb =  $this->createQueryBuilder('b')
             ->addSelect('o')
             ->addSelect('h')
@@ -56,13 +52,8 @@ class BarListRepository extends ServiceEntityRepository
         return $qb->execute();
     }
 
-    public function findAllOpenBars(...$params) {
-
-        $params = [
-            'day' =>  "%".$params[0]."%",
-            'currentTime' => $params[1],
-        ];
-
+    public function findAllOpenBars($params)
+    {
         $qb =  $this->createQueryBuilder('b')
             ->addSelect('o')
             ->addSelect('h')
@@ -94,19 +85,8 @@ class BarListRepository extends ServiceEntityRepository
         return $qb->execute();
     }
 
-    public function findBarsGeo(...$params) : array
+    public function findBars($params): array
     {
-        $params = [
-            'latstart' => $params[0],
-            'lonstart' => $params[1],
-            'limitkm' => (isset($params[2])) ? $params[2]*1000 : 10000,
-            'terrace' => (isset($params[3])) ? $params[3] : "0,1",
-            'day' =>  "%".$params[4]."%",
-            'starthour' => (isset( $params[5])) ? $params[5] : "00:00",
-            'endhour' => (isset( $params[6])) ? $params[6] : "23:00",
-            'price' => (isset($params[7])) ? $params[7] : 99 ,
-        ];
-
         $qb =  $this->createQueryBuilder('b')
             ->addSelect('o')
             ->addSelect('h')
@@ -127,35 +107,26 @@ class BarListRepository extends ServiceEntityRepository
                 o.days,
                 h.start_happy,
                 h.end_happy,
-                h.days,
-                SQRT(POWER(69.1 * (b.lat - :latstart  ), 2) + POWER(69.1 * ( :lonstart - b.lon) * COS(b.lat / 57.3), 2)) * 1.609344 AS distance")
+                h.days as days_happy,
+                CASE WHEN h.start_happy < :currentTime THEN b.price_happy WHEN h.end_happy > :currentTime THEN b.price_happy ELSE b.price_normal END AS price_final")
             ->leftJoin('App\Entity\BarOpenHours', 'o',   Expr\Join::WITH,  'b.id = o.id_bar')
             ->leftJoin('App\Entity\BarHappyHours', 'h',   Expr\Join::WITH,  'b.id = h.id_bar')
-            ->having("distance <= :limitkm")
+            // @TODO : currentPrice
+            ->having("price_final < :price")
             ->where("o.days LIKE :day")
-            ->andWhere("o.end_hour <= :endhour")
-            ->andWhere("o.start_hour >= :starthour")
-            ->andWhere("b.terrace IN (:terrace)")
-            ->andWhere("b.price_normal <= :price")
             ->andWhere("h.days LIKE :day")
+            ->andWhere("(o.start_hour < o.end_hour AND o.end_hour > :currentTime AND o.start_hour < :currentTime) OR (o.start_hour > o.end_hour AND (o.end_hour > :currentTime OR o.start_hour < :currentTime))")
+            ->andWhere("b.terrace IN (:terrace)")
+            ->andWhere("(o.start_hour < o.end_hour AND o.end_hour > :openAfter AND o.start_hour < :openAfter) OR (o.start_hour > o.end_hour AND (o.end_hour > :openAfter OR o.start_hour < :openAfter))")
+            ->andWhere("(h.start_happy < h.end_happy AND h.end_happy > :happyAfter AND h.start_happy < :happyAfter) OR (h.start_happy > h.end_happy AND (h.end_happy > :happyAfter OR h.start_happy < :happyAfter))")
             ->setParameters($params)
-            ->setMaxResults(20)
             ->getQuery();
-
 
         return $qb->execute();
     }
 
-    public function findBars(...$params) : array
+    public function findBarGeo($params,$limit): array
     {
-        $params = [
-            'terrace' => (isset($params[0])) ? $params[0] : "0,1",
-            'day' =>  "%".$params[1]."%",
-            'starthour' => (isset( $params[2])) ? $params[2] : "23:00",
-            'price' => (isset($params[3])) ? $params[3] : 99,
-            'starthappy' => (isset( $params[4])) ? $params[4] : "23:00",
-        ];
-
         $qb =  $this->createQueryBuilder('b')
             ->addSelect('o')
             ->addSelect('h')
@@ -176,51 +147,17 @@ class BarListRepository extends ServiceEntityRepository
                 o.days,
                 h.start_happy,
                 h.end_happy,
-                h.days as days_happy")
+                h.days as days_happy,
+                SQRT(POWER(69.1 * (b.lat - :lat  ), 2) + POWER(69.1 * ( :lon - b.lon) * COS(b.lat / 57.3), 2)) * 1.609344 AS distance
+                ")
             ->leftJoin('App\Entity\BarOpenHours', 'o',   Expr\Join::WITH,  'b.id = o.id_bar')
             ->leftJoin('App\Entity\BarHappyHours', 'h',   Expr\Join::WITH,  'b.id = h.id_bar')
             ->where("o.days LIKE :day")
-            ->andWhere("o.start_hour <= :starthour")
-            ->andWhere("b.terrace IN (:terrace)")
-            ->andWhere("b.price_normal <= :price")
-            ->andWhere("h.start_happy <= :starthappy")
-            ->andWhere("h.days LIKE :day")
+            ->andWhere("(o.start_hour < o.end_hour AND o.end_hour > :currentTime AND o.start_hour < :currentTime) OR (o.start_hour > o.end_hour AND (o.end_hour > :currentTime OR o.start_hour < :currentTime))")
             ->setParameters($params)
-            ->setMaxResults(20)
+            ->setMaxResults($limit)
             ->getQuery();
 
         return $qb->execute();
     }
-
-    public function findBarById(...$params) : array
-    {
-        $params = [
-            'id' => $params[0],
-            'day' => "%".$params[1]."%"
-        ];
-
-        $qb =  $this->createQueryBuilder('b')
-            ->addSelect('o')
-            ->select("
-                b.id,
-                b.name,
-                b.city,
-                b.address,
-                b.cp,
-                b.price_normal,
-                b.price_happy,
-                b.terrace,
-                o.start_hour,
-                o.end_hour"
-            )
-            ->leftJoin('App\Entity\BarOpenHours', 'o',   Expr\Join::WITH,  'b.id = o.id_bar')
-            ->where("b.id = :id")
-            ->andWhere("h.days LIKE :day")
-            ->setParameters($params)
-            ->setMaxResults(20)
-            ->getQuery();
-
-        return $qb->execute();
-    }
-
 }
