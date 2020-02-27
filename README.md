@@ -1,6 +1,9 @@
-# Cheers-api
+
+# Cheers-app
 
 ## Projet fil rouge - HETIC
+### Link : https://cheers-app.netlify.com/
+
 ### Team :
 - Lucas Benhayoun *(Designer)*
 - Rodrigo Tapia *(Front/Backend)*
