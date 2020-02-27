@@ -2,8 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\SportsList;
 use App\Entity\BarList;
 use App\Repository\BarListRepository;
+use App\Repository\SportsListRepository;
 use App\Repository\BarOpenHoursRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -149,4 +151,33 @@ class ApiController extends AbstractController
 
         return $response;
     }
+
+
+    /**
+     * @Route("/api/popup/", name="barspopup", methods={"GET"})
+     *
+     */
+    public function getPopupBar (SportsListRepository $repository, Request $request, JsonFormatter $jsonDate)
+    {
+        $sports = $request->query->get('sports');
+        $sportslist = (isset($sports) ? explode(',',$sports) : null);
+
+        $params = [
+            'date' => date("Y-m-d"),
+            'sports' => $sportslist,
+        ];
+
+        $sports = $repository->findSports($params);
+
+        $encoders = [new JsonEncoder()];
+        $normalizers = [new ObjectNormalizer()];
+        $serializer = new Serializer($normalizers,$encoders);
+        $jsonContent = $serializer->serialize($sports, 'json');
+        $jsonFinal = $jsonDate->formatDate($jsonContent);
+        $response = new Response($jsonFinal);
+        $response->headers->set('Content-Type', 'application/json');
+
+        return $response;
+    }
+
 }
