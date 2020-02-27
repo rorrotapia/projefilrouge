@@ -25,7 +25,6 @@ class ApiBarController extends AbstractController
         return $this->redirectToRoute("api/bars");
     }
 
-
     /**
      * @Route("/api/bars", name="bars", methods={"GET"})
      *
@@ -87,8 +86,6 @@ class ApiBarController extends AbstractController
         //on envoie la reponse
         return $response;
     }
-
-
 
     /**
      * @Route("/api/bars/search", name="bars_search", methods={"GET"})

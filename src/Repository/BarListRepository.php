@@ -42,7 +42,8 @@ class BarListRepository extends ServiceEntityRepository
                 o.days,
                 h.start_happy,
                 h.end_happy,
-                h.days")
+                h.days,
+                CASE WHEN h.start_happy < :currentTime THEN b.price_happy WHEN h.end_happy > :currentTime THEN b.price_happy ELSE b.price_normal END AS pricecurrent")
             ->leftJoin('App\Entity\BarOpenHours', 'o',   Expr\Join::WITH,  'b.id = o.id_bar')
             ->leftJoin('App\Entity\BarHappyHours', 'h',   Expr\Join::WITH,  'b.id = h.id_bar')
             ->where("o.days LIKE :day")
@@ -74,7 +75,8 @@ class BarListRepository extends ServiceEntityRepository
                 o.days,
                 h.start_happy,
                 h.end_happy,
-                h.days")
+                h.days,
+                CASE WHEN h.start_happy < :currentTime THEN b.price_happy WHEN h.end_happy > :currentTime THEN b.price_happy ELSE b.price_normal END AS pricecurrent")
             ->leftJoin('App\Entity\BarOpenHours', 'o',   Expr\Join::WITH,  'b.id = o.id_bar')
             ->leftJoin('App\Entity\BarHappyHours', 'h',   Expr\Join::WITH,  'b.id = h.id_bar')
             ->where("o.days LIKE :day")
@@ -108,11 +110,10 @@ class BarListRepository extends ServiceEntityRepository
                 h.start_happy,
                 h.end_happy,
                 h.days as days_happy,
-                CASE WHEN h.start_happy < :currentTime THEN b.price_happy WHEN h.end_happy > :currentTime THEN b.price_happy ELSE b.price_normal END AS price_final")
+                CASE WHEN h.start_happy < :currentTime THEN b.price_happy WHEN h.end_happy > :currentTime THEN b.price_happy ELSE b.price_normal END AS pricecurrent")
             ->leftJoin('App\Entity\BarOpenHours', 'o',   Expr\Join::WITH,  'b.id = o.id_bar')
             ->leftJoin('App\Entity\BarHappyHours', 'h',   Expr\Join::WITH,  'b.id = h.id_bar')
-            // @TODO : currentPrice
-            ->having("price_final < :price")
+            ->having("pricecurrent < :price")
             ->where("o.days LIKE :day")
             ->andWhere("h.days LIKE :day")
             ->andWhere("(o.start_hour < o.end_hour AND o.end_hour > :currentTime AND o.start_hour < :currentTime) OR (o.start_hour > o.end_hour AND (o.end_hour > :currentTime OR o.start_hour < :currentTime))")
