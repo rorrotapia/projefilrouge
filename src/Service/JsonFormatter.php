@@ -52,8 +52,8 @@ class JsonFormatter
         $original_data = json_decode($jsonData, true);
 
         foreach($original_data as &$value) {
-            $value['start_hour'] = date ( "H:i",$value['start_hour']['timestamp']);
-            $value['end_hour'] = date ( "H:i",$value['end_hour']['timestamp']);
+            $value['horaire'] = date ( "H:i",$value['horaire']['timestamp']);
+            $value['date'] = date ( "Y-m-d",$value['date']['timestamp']);
         }
 
         $final_data = json_encode($original_data, JSON_PRETTY_PRINT);

@@ -21,33 +21,15 @@ class SportsListRepository extends ServiceEntityRepository
     }
 
    
-    public function findSports(...$params) : array
+    public function findSports($params) : array
     {
-        $wherein = explode(',',$params[1]);
-    
-
-        $params = [
-            'date' => $params[0],
-            'sports' => $wherein
-        ];
-
-
-        $qb =  $this->createQueryBuilder('b')
-            ->select("
-                b.id,
-                b.nom,
-                b.phase,
-                b.horaire,
-                b.lieu,
-                b.date"
-            )
-            ->where("b.nom IN (:sports)")
-            ->andWhere("b.date = :date")
+        $qb =  $this->createQueryBuilder('e')
+            ->select()
+            ->where("e.nom IN (:sports)")
+            ->andWhere("e.date = :date")
             ->setParameters($params)
-            ->setMaxResults(20)
             ->getQuery();
 
-       
         return $qb->execute();
     }
 }

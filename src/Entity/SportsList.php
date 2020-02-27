@@ -28,7 +28,7 @@ class SportsList
     private $phase;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="datetime")
      */
     private $horaire;
 
@@ -38,7 +38,7 @@ class SportsList
     private $lieu;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="date")
      */
     private $date;
 
@@ -71,12 +71,12 @@ class SportsList
         return $this;
     }
 
-    public function getHoraire(): ?string
+    public function getHoraire(): ?\DateTime
     {
         return $this->horaire;
     }
 
-    public function setHoraire(string $horaire): self
+    public function setHoraire(\DateTime $horaire): self
     {
         $this->horaire = $horaire;
 
@@ -95,12 +95,12 @@ class SportsList
         return $this;
     }
 
-    public function getDate(): ?string
+    public function getDate(): ?\DateTime
     {
         return $this->date;
     }
 
-    public function setDate(string $date): self
+    public function setDate(\DateTime $date): self
     {
         $this->date = $date;
 
