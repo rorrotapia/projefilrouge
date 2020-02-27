@@ -34,6 +34,7 @@ class ApiBarController extends AbstractController
         $day = getdate ();
         $params = [
             'day' => ($day['wday'] === 0) ? 7 : "%".$day['wday']."%",
+            'currentTime' => date("H:i:s"),
         ];
 
         //On recupere la liste de bars
