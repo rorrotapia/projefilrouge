@@ -120,4 +120,33 @@ class ApiController extends AbstractController
 
         return $response;
     }
+
+    /**
+     * @Route("/api/bars/searchgeo/", name="bars_search_geo", methods={"GET"})
+     *
+     */
+    public function getFilteredBarsGeo (BarListRepository $repository, JsonFormatter $geojsonConverter,Request $request)
+    {
+        $day = getdate ();
+        $params = [
+            'day' => ($day['wday'] === 0) ? 7 : "%".$day['wday']."%",
+            'currentTime' => date("H:i:s"),
+            'lat' => $request->query->get('lat') ?? 2,
+            'lon' => $request->query->get('lon') ?? 44
+        ];
+        $limit = $request->query->get('limit') ?? 20;
+
+        //On recupere la liste de bars
+        $bar = $repository->findBarGeo($params,$limit);
+
+        $encoders = [new JsonEncoder()];
+        $normalizers = [new ObjectNormalizer()];
+        $serializer = new Serializer($normalizers,$encoders);
+        $jsonContent = $serializer->serialize($bar, 'json');
+        $geoJson = $geojsonConverter->convertGeoJson($jsonContent);
+        $response = new Response($geoJson);
+        $response->headers->set('Content-Type', 'application/json');
+
+        return $response;
+    }
 }
