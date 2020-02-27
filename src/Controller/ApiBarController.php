@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\BarList;
 use App\Repository\BarListRepository;
+use App\Service\RequestFilters;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -29,32 +30,23 @@ class ApiBarController extends AbstractController
      * @Route("/api/bars", name="bars", methods={"GET"})
      *
      */
-    public function getBars(BarListRepository $repository, JsonFormatter $geojsonConverter)
+    public function getBars(BarListRepository $repository, JsonFormatter $geojsonConverter,Request $request, RequestFilters $filters)
     {
-        $day = getdate ();
-        $params = [
-            'day' => ($day['wday'] === 0) ? 7 : "%".$day['wday']."%",
-            'currentTime' => date("H:i:s"),
-        ];
-
+        //verification de parametres
+        $params = $filters->RequestFilters($request);
         //On recupere la liste de bars
         $bars = $repository->findAllBars($params);
-
         //on specifie qu'on utilise un décodeur json
         $encoders = [new JsonEncoder()];
         //on  instance un normaliseur pour convertir en tableau
         $normalizers = [new ObjectNormalizer()];
-
         //on fait la conversion en json
         //on instancie le convertiseur
         $serializer = new Serializer($normalizers,$encoders);
-
         //on convertit en json
         $jsonContent = $serializer->serialize($bars, 'json');
-
         //On convertir le json à geojson
         $geoJson = $geojsonConverter->convertGeoJson($jsonContent);
-
         //on instencie la reponse
         $response = new Response($geoJson);
         //on ajoute l'entete HTTP
@@ -67,14 +59,9 @@ class ApiBarController extends AbstractController
      * @Route("/api/bars/open", name="barsOpen", methods={"GET"})
      *
      */
-    public function getOpenBars(BarListRepository $repository, JsonFormatter $geojsonConverter)
+    public function getOpenBars(BarListRepository $repository, JsonFormatter $geojsonConverter, Request $request, RequestFilters $filters)
     {
-        $day = getdate ();
-        $params = [
-            'day' => ($day['wday'] === 0) ? 7 : "%".$day['wday']."%",
-            'currentTime' => date("H:i:s"),
-        ];
-        //On recupere la liste de bars
+        $params = $filters->RequestFilters($request);
         $bars = $repository->findAllOpenBars($params);
 
         $encoders = [new JsonEncoder()];
@@ -92,19 +79,9 @@ class ApiBarController extends AbstractController
      * @Route("/api/bars/search", name="bars_search", methods={"GET"})
      *
      */
-    public function getFilteredBars (BarListRepository $repository, JsonFormatter $geojsonConverter,Request $request)
+    public function getFilteredBars (BarListRepository $repository, JsonFormatter $geojsonConverter,Request $request, RequestFilters $filters)
     {
-        $day = getdate ();
-        $params = [
-            'day' => ($day['wday'] === 0) ? 7 : "%".$day['wday']."%",
-            'price' => $request->query->get('price') ?? 99,
-            'terrace' => $request->query->get('terrace') ?? "0,1",
-            'openAfter' => $request->query->get('openAfter') ?? "23:00",
-            'happyAfter' => $request->query->get('happyAfter') ?? "23:00",
-            'currentTime' => date("H:i:s")
-        ];
-        
-        //On recupere la liste de bars
+        $params = $filters->RequestFilters($request);
         $bar = $repository->findBars($params);
 
         $encoders = [new JsonEncoder()];
@@ -122,18 +99,10 @@ class ApiBarController extends AbstractController
      * @Route("/api/bars/searchgeo/", name="bars_search_geo", methods={"GET"})
      *
      */
-    public function getFilteredBarsGeo (BarListRepository $repository, JsonFormatter $geojsonConverter,Request $request)
+    public function getFilteredBarsGeo (BarListRepository $repository, JsonFormatter $geojsonConverter,Request $request, RequestFilters $filters)
     {
-        $day = getdate ();
-        $params = [
-            'day' => ($day['wday'] === 0) ? 7 : "%".$day['wday']."%",
-            'currentTime' => date("H:i:s"),
-            'lat' => $request->query->get('lat') ?? 2,
-            'lon' => $request->query->get('lon') ?? 44
-        ];
-        $limit = $request->query->get('limit') ?? 20;
-
-        //On recupere la liste de bars
+        $params = $filters->RequestFilters($request,true);
+        $limit =  $request->query->get("limit");
         $bar = $repository->findBarGeo($params,$limit);
 
         $encoders = [new JsonEncoder()];

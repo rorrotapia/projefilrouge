@@ -113,20 +113,25 @@ class BarListRepository extends ServiceEntityRepository
                 CASE WHEN h.start_happy < :currentTime THEN b.price_happy WHEN h.end_happy > :currentTime THEN b.price_happy ELSE b.price_normal END AS pricecurrent")
             ->leftJoin('App\Entity\BarOpenHours', 'o',   Expr\Join::WITH,  'b.id = o.id_bar')
             ->leftJoin('App\Entity\BarHappyHours', 'h',   Expr\Join::WITH,  'b.id = h.id_bar')
-            ->having("pricecurrent < :price")
             ->where("o.days LIKE :day")
             ->andWhere("h.days LIKE :day")
-            ->andWhere("(o.start_hour < o.end_hour AND o.end_hour > :currentTime AND o.start_hour < :currentTime) OR (o.start_hour > o.end_hour AND (o.end_hour > :currentTime OR o.start_hour < :currentTime))")
-            ->andWhere("b.terrace IN (:terrace)")
-            ->andWhere("(o.start_hour < o.end_hour AND o.end_hour > :openAfter AND o.start_hour < :openAfter) OR (o.start_hour > o.end_hour AND (o.end_hour > :openAfter OR o.start_hour < :openAfter))")
-            ->andWhere("(h.start_happy < h.end_happy AND h.end_happy > :happyAfter AND h.start_happy < :happyAfter) OR (h.start_happy > h.end_happy AND (h.end_happy > :happyAfter OR h.start_happy < :happyAfter))")
-            ->setParameters($params)
-            ->getQuery();
+            ->andWhere("(o.start_hour < o.end_hour AND o.end_hour > :currentTime AND o.start_hour < :currentTime) OR (o.start_hour > o.end_hour AND (o.end_hour > :currentTime OR o.start_hour < :currentTime))");
+            if (isset($params['price'])) {
+                $qb->having("pricecurrent < :price");}
+            if (isset($params['terrace'])) {
+                $qb->andWhere("b.terrace IN (:terrace)");}
+            if (isset($params['openAfter'])) {
+                $qb->andWhere("(o.start_hour < o.end_hour AND o.end_hour > :openAfter AND o.start_hour < :openAfter) OR (o.start_hour > o.end_hour AND (o.end_hour > :openAfter OR o.start_hour < :openAfter))");}
+            if (isset($params['happyAfter'])) {
+                $qb->andWhere("(h.start_happy < h.end_happy AND h.end_happy > :happyAfter AND h.start_happy < :happyAfter) OR (h.start_happy > h.end_happy AND (h.end_happy > :happyAfter OR h.start_happy < :happyAfter))");}
+            $qb->setParameters($params);
 
-        return $qb->execute();
+        $query = $qb->getQuery();
+
+        return $query->execute();
     }
 
-    public function findBarGeo($params,$limit): array
+    public function findBarGeo($params,$limit = null): array
     {
         $qb =  $this->createQueryBuilder('b')
             ->addSelect('o')
@@ -155,10 +160,12 @@ class BarListRepository extends ServiceEntityRepository
             ->leftJoin('App\Entity\BarHappyHours', 'h',   Expr\Join::WITH,  'b.id = h.id_bar')
             ->where("o.days LIKE :day")
             ->andWhere("(o.start_hour < o.end_hour AND o.end_hour > :currentTime AND o.start_hour < :currentTime) OR (o.start_hour > o.end_hour AND (o.end_hour > :currentTime OR o.start_hour < :currentTime))")
-            ->setParameters($params)
-            ->setMaxResults($limit)
-            ->getQuery();
+            ->setParameters($params);
+        if ($limit) {
+            $qb->setMaxResults($limit);
+        }
+        $query = $qb->getQuery();
 
-        return $qb->execute();
+        return $query->execute();
     }
 }
