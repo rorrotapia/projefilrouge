@@ -44,7 +44,7 @@ class BarListRepository extends ServiceEntityRepository
                 h.start_happy,
                 h.end_happy,
                 h.days,
-                CASE WHEN h.start_happy < :currentTime THEN b.price_happy WHEN h.end_happy > :currentTime THEN b.price_happy ELSE b.price_normal END AS pricecurrent")
+                CASE WHEN (h.start_happy < h.end_happy AND h.end_happy > :currentTime AND h.start_happy < :currentTime) OR (h.start_happy > h.end_happy AND (h.end_happy > :currentTime OR h.start_happy < :currentTime))THEN b.price_happy ELSE b.price_normal END AS pricecurrent")
             ->leftJoin('App\Entity\BarOpenHours', 'o',   Expr\Join::WITH,  'b.id = o.id_bar')
             ->leftJoin('App\Entity\BarHappyHours', 'h',   Expr\Join::WITH,  'b.id = h.id_bar')
             ->where("o.days LIKE :day")
@@ -78,7 +78,7 @@ class BarListRepository extends ServiceEntityRepository
                 h.start_happy,
                 h.end_happy,
                 h.days,
-                CASE WHEN h.start_happy < :currentTime THEN b.price_happy WHEN h.end_happy > :currentTime THEN b.price_happy ELSE b.price_normal END AS pricecurrent")
+                CASE WHEN (h.start_happy < h.end_happy AND h.end_happy > :currentTime AND h.start_happy < :currentTime) OR (h.start_happy > h.end_happy AND (h.end_happy > :currentTime OR h.start_happy < :currentTime))THEN b.price_happy ELSE b.price_normal END AS pricecurrent")
             ->leftJoin('App\Entity\BarOpenHours', 'o',   Expr\Join::WITH,  'b.id = o.id_bar')
             ->leftJoin('App\Entity\BarHappyHours', 'h',   Expr\Join::WITH,  'b.id = h.id_bar')
             ->where("o.days LIKE :day")
@@ -113,7 +113,7 @@ class BarListRepository extends ServiceEntityRepository
                 h.start_happy,
                 h.end_happy,
                 h.days as days_happy,
-                CASE WHEN h.start_happy < :currentTime THEN b.price_happy WHEN h.end_happy > :currentTime THEN b.price_happy ELSE b.price_normal END AS pricecurrent")
+                CASE WHEN (h.start_happy < h.end_happy AND h.end_happy > :currentTime AND h.start_happy < :currentTime) OR (h.start_happy > h.end_happy AND (h.end_happy > :currentTime OR h.start_happy < :currentTime))THEN b.price_happy ELSE b.price_normal END AS pricecurrent")
             ->leftJoin('App\Entity\BarOpenHours', 'o',   Expr\Join::WITH,  'b.id = o.id_bar')
             ->leftJoin('App\Entity\BarHappyHours', 'h',   Expr\Join::WITH,  'b.id = h.id_bar')
             ->where("o.days LIKE :day")
