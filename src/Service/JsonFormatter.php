@@ -32,6 +32,7 @@ class JsonFormatter
                     "priceCurrent" => ($value['pricecurrent'] === null) ? $value['price_normal'] : $value['pricecurrent'],
                     "distance" => $value['distance'] ?? null,
                     "terrace" => $value['terrace'],
+                    "rating" => $value['rating'] ?? null,
                     "start_hour" => (isset($value['start_hour']['timestamp'])) ? date ( "H:i",$value['start_hour']['timestamp']) : null,
                     "end_hour" => (isset($value['end_hour']['timestamp'])) ? date ( "H:i",$value['end_hour']['timestamp']) : null,
                     "start_happy" => (isset($value['start_happy']['timestamp'])) ? date ( "H:i",$value['start_happy']['timestamp']) : null,
