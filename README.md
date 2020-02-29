@@ -1,4 +1,4 @@
-# Cheers-api
+# Cheers-API
 
 ## Sommaire
 * [Présentation](#présentation)
@@ -7,17 +7,14 @@
 * [Argumentation](#argumentation)
 * [Prérequis & installation](#prérequis)
 
-## Présentation
+## PrésentationLiens:
+* [SiteWeb](https://cheers-app.netlify.com/)
 
-### Projet fil rouge - HETIC
-#### Link : https://cheers-app.netlify.com/
-#### Link de l'API: http://cheeers-api.herokuapp.com/api/bars/
-
-### Team :
-- Lucas Benhayoun *(Designer)*
-- Rodrigo Tapia *(Front/Backend)*
-- Jeremy Schiappapietre *(Backend)*
-- Guillaume Traub *(Front/Backend)*
+### Groupe n°13:
+* Lucas Benhayoun *(Designer)*
+* Rodrigo Tapia *(Front/Backend)*
+* Jeremy Schiappapietre *(Backend)*
+* Guillaume Traub *(Front/Backend)*
 
 ## Technologies:
 ### Technologie: 
@@ -40,6 +37,8 @@
 ## Argumentation
 
 
+Liens:
+* [Link de l'API](http://cheeers-api.herokuapp.com/api/bars/)
 
 ## Prérequis
 
