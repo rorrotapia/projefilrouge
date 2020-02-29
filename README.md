@@ -21,10 +21,18 @@
 
 ## Technologies:
 ### Technologie: 
--Symfony 4.4
+* Symfony 4.4
 
 ### Librairies et Packages:
--ORM(Doctrine)
+
+#### API
+* [ORM-Pack(Doctrine)](https://symfony.com/doc/current/doctrine.html#installing-doctrine)
+* [DoctrineExtensions](https://github.com/beberlei/DoctrineExtensions)
+* [Serializer](https://symfony.com/doc/current/components/serializer.html#installation)
+
+#### Récuperations des données (scrapping)
+* [Goutte](https://github.com/FriendsOfPHP/Goutte)
+
 
 ## Schéma
 ![Schema de bd, description ci-dessous](https://i.ibb.co/jHMDcT3/Untitled.png)
