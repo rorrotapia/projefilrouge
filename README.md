@@ -38,7 +38,7 @@
 ![Schema de bd, description ci-dessous](https://i.ibb.co/jHMDcT3/Untitled.png)
 Notre base de données est composé de 3 tables: Bar, OpenHour,HappyHour.
 
-Nous avons utilisé "Goutte"(scrapping) pour extraire les données des bars, horaires et happyhours. Ensuite nous avons créé des jointures des 3 tables filtré par jour actuelle. 
+Nous avons utilisé "Goutte"(scrapping) pour extraire les données des bars, horaires et happyhours. Ensuite nous avons créé des jointures des 3 tables filtré par le jour actuel. 
 Nous avons créé ensuite un controller avec différentes routes permettant l'affichage des données en json qui ensuite ont été traités et convertis en geojson pour pouvoir s'en servir en front.
 
 ## Argumentation
