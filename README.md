@@ -37,7 +37,7 @@
 ![Schema de bd, description ci-dessous](https://i.ibb.co/jHMDcT3/Untitled.png)
 Notre base de données est composé de 3 tables: Bar, OpenHour,HappyHour.
 
-Nous avons utilisé "Goutte" pour scrapper un site pour avoir les données des bars, horaires et happyhours. Ensuite nous avons crée un controller avec differents routes permetant l'affichage des données en json qui ensuite ont été traités et convertis en geojson pour pouvoir s'en servir en front.
+Nous avons utilisé "Goutte"(scrapping) pour extraire les données des bars, horaires et happyhours. Ensuite nous avons crée un controller avec differents routes permetant l'affichage des données en json qui ensuite ont été traités et convertis en geojson pour pouvoir s'en servir en front.
 
 ## Argumentation
 Nous avons décidé de créer une API sans utiliser API-Plateform pour la simple raison, d'avoir plus de liberté au moment de la gestion des données et leur type d'envoi. De plus le cœur de notre projet se base sur une fonctionnalité : filtrer les résultats par différents paramètres optionnels envoyé depuis l’appli, donc si on voulait utiliser API-Plateform, on allait devoir créer différents types de routes pour chaque cas possible, c'est qui veux dire avoir un code pas du tout maintenable.
